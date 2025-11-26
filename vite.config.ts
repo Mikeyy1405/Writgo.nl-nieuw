@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
         host: '0.0.0.0',
       },
       preview: {
-        allowedHosts: ['writgo-nl-nieuw.onrender.com'],
+        allowedHosts: ['writgo-nl-nieuw.onrender.com', 'writgo.nl'],
       },
       plugins: [react()],
       define: {
