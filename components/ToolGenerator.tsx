@@ -36,8 +36,10 @@ export const ToolGenerator: React.FC<ToolGeneratorProps> = ({ onSave, onCancel }
       const scrapedContent = await scrapeURL(url);
       
       // Step 2: Analyze with AI
+      // Prefer text content over HTML for efficiency, fallback to HTML if text is empty
       setProcessingStep('analyzing');
-      const item = await generateToolMetadata(url, scrapedContent.html || scrapedContent.text);
+      const contentToAnalyze = scrapedContent.text.trim() ? scrapedContent.text : scrapedContent.html;
+      const item = await generateToolMetadata(url, contentToAnalyze);
       
       // Step 3: Complete
       setProcessingStep('complete');

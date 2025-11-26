@@ -12,7 +12,15 @@ export interface ScrapedContent {
 }
 
 /**
+ * Maximum size for extracted text content
+ */
+const MAX_TEXT_SIZE = 50000;
+
+/**
  * CORS proxies to try in order of preference
+ * WARNING: Using third-party CORS proxies has security and reliability implications.
+ * These services can log requests, go offline, or potentially inject content.
+ * For production use, consider implementing server-side scraping.
  */
 const CORS_PROXIES = [
   'https://api.allorigins.win/raw?url=',
@@ -55,14 +63,14 @@ const extractMetadata = (html: string): { title?: string; description?: string; 
   const ogImage = doc.querySelector('meta[property="og:image"]');
   const twitterImage = doc.querySelector('meta[name="twitter:image"]');
   
-  if (ogImage?.getAttribute('content')) {
-    images.push(ogImage.getAttribute('content')!);
+  const ogImageContent = ogImage?.getAttribute('content');
+  if (ogImageContent) {
+    images.push(ogImageContent);
   }
-  if (twitterImage?.getAttribute('content')) {
-    const twitterImg = twitterImage.getAttribute('content')!;
-    if (!images.includes(twitterImg)) {
-      images.push(twitterImg);
-    }
+  
+  const twitterImgContent = twitterImage?.getAttribute('content');
+  if (twitterImgContent && !images.includes(twitterImgContent)) {
+    images.push(twitterImgContent);
   }
   
   // Get regular img tags (limit to first 5)
@@ -97,7 +105,7 @@ export const scrapeURL = async (url: string): Promise<ScrapedContent> => {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
       },
     });
     
@@ -108,7 +116,7 @@ export const scrapeURL = async (url: string): Promise<ScrapedContent> => {
       
       return {
         html,
-        text: text.substring(0, 50000), // Limit text size
+        text: text.substring(0, MAX_TEXT_SIZE),
         title: metadata.title,
         metaDescription: metadata.description,
         images: metadata.images,
@@ -134,7 +142,7 @@ export const scrapeURL = async (url: string): Promise<ScrapedContent> => {
         
         return {
           html,
-          text: text.substring(0, 50000), // Limit text size
+          text: text.substring(0, MAX_TEXT_SIZE),
           title: metadata.title,
           metaDescription: metadata.description,
           images: metadata.images,
