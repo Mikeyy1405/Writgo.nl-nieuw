@@ -41,7 +41,12 @@ export const ToolGenerator: React.FC<ToolGeneratorProps> = ({ onSave, onCancel }
       const contentToAnalyze = scrapedContent.text.trim() ? scrapedContent.text : scrapedContent.html;
       const item = await generateToolMetadata(url, contentToAnalyze);
       
-      // Step 3: Complete
+      // Step 3: Check if generation was successful
+      if (!item) {
+        throw new Error('AI kon geen review genereren. Controleer of de API-sleutel is geconfigureerd en probeer opnieuw.');
+      }
+      
+      // Step 4: Complete
       setProcessingStep('complete');
       setGeneratedItem(item);
     } catch (error) {
@@ -66,11 +71,18 @@ export const ToolGenerator: React.FC<ToolGeneratorProps> = ({ onSave, onCancel }
 
     try {
       const item = await generateToolMetadata(url, rawText);
+      
+      // Check if generation was successful
+      if (!item) {
+        throw new Error('AI kon geen review genereren. Controleer of de API-sleutel is geconfigureerd en probeer opnieuw.');
+      }
+      
       setProcessingStep('complete');
       setGeneratedItem(item);
     } catch (error) {
       console.error(error);
-      setError('Kon de gegevens niet analyseren. Probeer meer tekst toe te voegen.');
+      const errorMessage = error instanceof Error ? error.message : 'Kon de gegevens niet analyseren. Probeer meer tekst toe te voegen.';
+      setError(errorMessage);
     } finally {
       setIsGenerating(false);
       setProcessingStep('idle');
@@ -222,7 +234,7 @@ export const ToolGenerator: React.FC<ToolGeneratorProps> = ({ onSave, onCancel }
                   ) : (
                     <>
                       <i className="fas fa-magic mr-2"></i>
-                      Automatisch Genereren
+                      Start Generator
                     </>
                   )}
                 </button>
