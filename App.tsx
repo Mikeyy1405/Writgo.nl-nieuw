@@ -42,6 +42,19 @@ const App: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedItem, setSelectedItem] = useState<GrowthItem | null>(null);
 
+  // Convert path-based routes to hash-based routes on initial load
+  // This handles cases where users navigate directly to /admin, /blog, etc.
+  useEffect(() => {
+    const pathname = window.location.pathname;
+    const hash = window.location.hash;
+    
+    // Only convert if there's a path but no hash
+    if (pathname !== '/' && !hash) {
+      // Remove leading slash and convert to hash route
+      window.location.replace(`${window.location.origin}/#${pathname}`);
+    }
+  }, []);
+
   // Initial Load (Backend Simulation)
   useEffect(() => {
     const init = async () => {
