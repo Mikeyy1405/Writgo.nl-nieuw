@@ -11,7 +11,7 @@ import { BlogPost as BlogPostView } from './components/BlogPost';
 import { BlogGenerator } from './components/BlogGenerator';
 import { ToolGenerator } from './components/ToolGenerator';
 import { Login } from './components/Login';
-import { Dashboard } from './components/Dashboard';
+import { AdminPanel } from './components/AdminPanel';
 import { WhyWritgo } from './components/WhyWritgo';
 import { CategoryGrid } from './components/CategoryGrid';
 import { LatestArticlesPreview } from './components/LatestArticlesPreview';
@@ -21,13 +21,14 @@ import { searchAiRecommendations } from './services/geminiService';
 import * as db from './services/db';
 import * as auth from './services/auth';
 
-type ViewState = 'HOME' | 'ITEM_DETAIL' | 'BLOG' | 'BLOG_DETAIL' | 'BLOG_NEW' | 'TOOL_NEW' | 'LOGIN' | 'DASHBOARD';
+type ViewState = 'HOME' | 'ITEM_DETAIL' | 'BLOG' | 'BLOG_DETAIL' | 'BLOG_NEW' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN';
 
 const App: React.FC = () => {
   // Application Data
   const [items, setItems] = useState<GrowthItem[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
   
   // UI State
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +53,7 @@ const App: React.FC = () => {
       setItems(fetchedItems);
       setBlogPosts(fetchedPosts);
       setUser(auth.getCurrentUser());
+      setAllUsers(auth.getUsersForDisplay());
       setIsLoading(false);
     };
     init();
@@ -111,14 +113,18 @@ const App: React.FC = () => {
       } else if (hash === '#/blog') {
           setCurrentView('BLOG');
           window.scrollTo(0, 0);
-      } else if (hash === '#/dashboard') {
-          setCurrentView('DASHBOARD');
+      } else if (hash === '#/admin' || hash.startsWith('#/admin/')) {
+          // Handle all admin routes
+          if (hash === '#/admin/blog/new') {
+              setCurrentView('BLOG_NEW');
+          } else if (hash === '#/admin/tool/new') {
+              setCurrentView('TOOL_NEW');
+          } else {
+              setCurrentView('ADMIN');
+          }
+          window.scrollTo(0, 0);
       } else if (hash === '#/login') {
           setCurrentView('LOGIN');
-      } else if (hash === '#/admin/tool/new') {
-          setCurrentView('TOOL_NEW');
-      } else if (hash === '#/admin/blog/new') {
-          setCurrentView('BLOG_NEW');
       }
   };
 
@@ -132,13 +138,39 @@ const App: React.FC = () => {
 
   const handleLogin = (loggedInUser: User) => {
     setUser(loggedInUser);
-    window.location.hash = '#/dashboard';
+    setAllUsers(auth.getUsersForDisplay());
+    window.location.hash = '#/admin';
   };
 
   const handleLogout = async () => {
     await auth.logout();
     setUser(null);
     window.location.hash = '#/';
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    const updatedItems = await db.deleteItem(itemId);
+    setItems(updatedItems);
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    const updatedPosts = await db.deletePost(postId);
+    setBlogPosts(updatedPosts);
+  };
+
+  const handleCreateUser = async (email: string, password: string, name: string, role: 'ADMIN' | 'USER') => {
+    await auth.createUser(email, password, name, role);
+    setAllUsers(auth.getUsersForDisplay());
+  };
+
+  const handleUpdateUser = async (userId: string, updates: { name?: string; email?: string; role?: 'ADMIN' | 'USER'; password?: string }) => {
+    await auth.updateUser(userId, updates);
+    setAllUsers(auth.getUsersForDisplay());
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    await auth.deleteUser(userId);
+    setAllUsers(auth.getUsersForDisplay());
   };
 
   const handleSearch = async (query: string) => {
@@ -169,7 +201,7 @@ const App: React.FC = () => {
   };
 
   const handleNavigate = (page: ViewState) => {
-    if ((page === 'BLOG_NEW' || page === 'TOOL_NEW' || page === 'DASHBOARD') && !user) {
+    if ((page === 'BLOG_NEW' || page === 'TOOL_NEW' || page === 'ADMIN') && !user) {
       window.location.hash = '#/login';
       return;
     }
@@ -177,7 +209,7 @@ const App: React.FC = () => {
     switch(page) {
         case 'HOME': window.location.hash = '#/'; break;
         case 'BLOG': window.location.hash = '#/blog'; break;
-        case 'DASHBOARD': window.location.hash = '#/dashboard'; break;
+        case 'ADMIN': window.location.hash = '#/admin'; break;
         case 'LOGIN': window.location.hash = '#/login'; break;
         case 'BLOG_NEW': window.location.hash = '#/admin/blog/new'; break;
         case 'TOOL_NEW': window.location.hash = '#/admin/tool/new'; break;
@@ -230,12 +262,20 @@ const App: React.FC = () => {
           <Login onLoginSuccess={handleLogin} onCancel={() => handleNavigate('HOME')} />
         )}
 
-        {currentView === 'DASHBOARD' && user && (
-            <Dashboard 
+        {currentView === 'ADMIN' && user && (
+            <AdminPanel 
                 user={user} 
                 items={items} 
                 posts={blogPosts}
+                users={allUsers}
                 onNavigate={handleNavigate}
+                onViewItem={handleViewItem}
+                onViewPost={handleReadPost}
+                onDeleteItem={handleDeleteItem}
+                onDeletePost={handleDeletePost}
+                onCreateUser={handleCreateUser}
+                onUpdateUser={handleUpdateUser}
+                onDeleteUser={handleDeleteUser}
             />
         )}
 
@@ -311,14 +351,14 @@ const App: React.FC = () => {
         {currentView === 'BLOG_NEW' && (
             <BlogGenerator 
                 onSave={handleSaveBlogPost}
-                onCancel={() => handleNavigate('DASHBOARD')}
+                onCancel={() => handleNavigate('ADMIN')}
             />
         )}
 
         {currentView === 'TOOL_NEW' && (
             <ToolGenerator
                 onSave={handleSaveTool}
-                onCancel={() => handleNavigate('DASHBOARD')}
+                onCancel={() => handleNavigate('ADMIN')}
             />
         )}
 
@@ -333,7 +373,7 @@ const App: React.FC = () => {
 
       <Footer />
       
-      {currentView === 'DASHBOARD' && user && (
+      {currentView === 'ADMIN' && user && (
           <div className="flex justify-center pb-8 opacity-40 hover:opacity-100 transition-opacity">
               <button onClick={async () => {
                   if(confirm("Weet je het zeker? De database wordt volledig gereset.")) {

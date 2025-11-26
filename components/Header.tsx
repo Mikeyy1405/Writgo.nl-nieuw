@@ -4,7 +4,7 @@ import { User } from '../types';
 
 interface HeaderProps {
   currentView: string;
-  onNavigate: (view: 'HOME' | 'BLOG' | 'BLOG_NEW' | 'TOOL_NEW' | 'LOGIN' | 'DASHBOARD') => void;
+  onNavigate: (view: 'HOME' | 'BLOG' | 'BLOG_NEW' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN') => void;
   user: User | null;
   onLogout: () => void;
 }
@@ -40,10 +40,10 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, user, o
           {/* Admin Link */}
           {user && (
             <button 
-              onClick={() => onNavigate('DASHBOARD')}
-              className={`transition-colors flex items-center hover:text-brand-400 ${currentView === 'DASHBOARD' || currentView === 'BLOG_NEW' || currentView === 'TOOL_NEW' ? 'text-brand-400 font-bold' : ''}`}
+              onClick={() => onNavigate('ADMIN')}
+              className={`transition-colors flex items-center hover:text-brand-400 ${currentView === 'ADMIN' || currentView === 'BLOG_NEW' || currentView === 'TOOL_NEW' ? 'text-brand-400 font-bold' : ''}`}
             >
-              <i className="fas fa-columns mr-2 text-xs"></i> Dashboard
+              <i className="fas fa-columns mr-2 text-xs"></i> Admin
             </button>
           )}
         </nav>
