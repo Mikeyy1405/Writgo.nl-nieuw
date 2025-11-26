@@ -114,7 +114,13 @@ const App: React.FC = () => {
           setCurrentView('BLOG');
           window.scrollTo(0, 0);
       } else if (hash === '#/admin' || hash.startsWith('#/admin/')) {
-          // Handle all admin routes
+          // Handle all admin routes - require authentication
+          const currentUser = auth.getCurrentUser();
+          if (!currentUser) {
+              // Redirect unauthenticated users to login
+              window.location.hash = '#/login';
+              return;
+          }
           if (hash === '#/admin/blog/new') {
               setCurrentView('BLOG_NEW');
           } else if (hash === '#/admin/tool/new') {
