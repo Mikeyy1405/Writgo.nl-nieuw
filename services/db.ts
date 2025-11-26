@@ -44,9 +44,28 @@ export const getItemBySlug = async (slug: string): Promise<GrowthItem | undefine
 export const saveItem = async (item: GrowthItem): Promise<GrowthItem[]> => {
   await delay(600);
   const items = await getItems();
-  const newItems = [item, ...items];
+  const existingIndex = items.findIndex(i => i.id === item.id);
+  
+  let newItems: GrowthItem[];
+  if (existingIndex >= 0) {
+    // Update existing item
+    newItems = [...items];
+    newItems[existingIndex] = item;
+  } else {
+    // Add new item
+    newItems = [item, ...items];
+  }
+  
   localStorage.setItem('writgo_items', JSON.stringify(newItems));
   return newItems;
+};
+
+export const deleteItem = async (itemId: string): Promise<GrowthItem[]> => {
+  await delay(400);
+  const items = await getItems();
+  const filteredItems = items.filter(i => i.id !== itemId);
+  localStorage.setItem('writgo_items', JSON.stringify(filteredItems));
+  return filteredItems;
 };
 
 // --- BLOG POSTS ---
@@ -66,9 +85,28 @@ export const getPostBySlug = async (slug: string): Promise<BlogPost | undefined>
 export const savePost = async (post: BlogPost): Promise<BlogPost[]> => {
   await delay(600);
   const posts = await getPosts();
-  const newPosts = [post, ...posts];
+  const existingIndex = posts.findIndex(p => p.id === post.id);
+  
+  let newPosts: BlogPost[];
+  if (existingIndex >= 0) {
+    // Update existing post
+    newPosts = [...posts];
+    newPosts[existingIndex] = post;
+  } else {
+    // Add new post
+    newPosts = [post, ...posts];
+  }
+  
   localStorage.setItem('writgo_posts', JSON.stringify(newPosts));
   return newPosts;
+};
+
+export const deletePost = async (postId: string): Promise<BlogPost[]> => {
+  await delay(400);
+  const posts = await getPosts();
+  const filteredPosts = posts.filter(p => p.id !== postId);
+  localStorage.setItem('writgo_posts', JSON.stringify(filteredPosts));
+  return filteredPosts;
 };
 
 // --- RESET (Dev only) ---
