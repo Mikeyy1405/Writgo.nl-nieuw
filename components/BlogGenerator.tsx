@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { BlogPost } from '../types';
-import { generateBlogPost } from '../services/geminiService';
+import { generateBlogPost } from '../services/claudeService';
 
 interface BlogGeneratorProps {
   onSave: (post: BlogPost) => void;

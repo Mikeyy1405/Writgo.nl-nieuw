@@ -8,6 +8,13 @@ This contains everything you need to run your app locally.
 
 View your app in AI Studio: https://ai.studio/apps/drive/1Uk9EXmZ4f0n0Wpv7wQjMmNwuq9YPhjDC
 
+## AI Features
+
+This application uses **Claude 4.5 Sonnet** (claude-sonnet-4-20250514) from Anthropic for all AI-powered features:
+- AI-generated product/course reviews
+- AI-powered blog post generation
+- AI search recommendations
+
 ## Run Locally
 
 **Prerequisites:**  Node.js
@@ -15,6 +22,6 @@ View your app in AI Studio: https://ai.studio/apps/drive/1Uk9EXmZ4f0n0Wpv7wQjMmN
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Set the `CLAUDE_API_KEY` in [.env.local](.env.local) to your Claude API key from Anthropic
 3. Run the app:
    `npm run dev`

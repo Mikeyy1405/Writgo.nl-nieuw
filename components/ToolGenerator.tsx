@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GrowthItem } from '../types';
-import { generateToolMetadata } from '../services/geminiService';
+import { generateToolMetadata } from '../services/claudeService';
 import { scrapeURL } from '../services/scraper';
 
 interface ToolGeneratorProps {
@@ -43,7 +43,7 @@ export const ToolGenerator: React.FC<ToolGeneratorProps> = ({ onSave, onCancel }
       
       // Step 3: Check if generation was successful
       if (!item) {
-        throw new Error('AI kon geen review genereren. Controleer of de API-sleutel is geconfigureerd en probeer opnieuw.');
+        throw new Error('AI kon geen review genereren. Controleer of de CLAUDE_API_KEY is geconfigureerd en probeer opnieuw.');
       }
       
       // Step 4: Complete
@@ -74,7 +74,7 @@ export const ToolGenerator: React.FC<ToolGeneratorProps> = ({ onSave, onCancel }
       
       // Check if generation was successful
       if (!item) {
-        throw new Error('AI kon geen review genereren. Controleer of de API-sleutel is geconfigureerd en probeer opnieuw.');
+        throw new Error('AI kon geen review genereren. Controleer of de CLAUDE_API_KEY is geconfigureerd en probeer opnieuw.');
       }
       
       setProcessingStep('complete');
