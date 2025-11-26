@@ -5,7 +5,7 @@ import { STATIC_ITEMS, STATIC_BLOG_POSTS } from '../constants';
 
 // Versiebeheer voor LocalStorage.
 // Als we de constante data veranderen, hogen we dit op om de cache te overschrijven.
-const DB_VERSION = '2.4';
+const DB_VERSION = '3.0';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

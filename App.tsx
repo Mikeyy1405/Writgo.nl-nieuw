@@ -8,7 +8,7 @@ import { CourseDetail } from './components/CourseDetail';
 import { Footer } from './components/Footer';
 import { BlogList } from './components/BlogList';
 import { BlogPost as BlogPostView } from './components/BlogPost';
-import { BlogGenerator } from './components/BlogGenerator';
+import { BlogEditor } from './components/BlogEditor';
 import { ToolGenerator } from './components/ToolGenerator';
 import { Login } from './components/Login';
 import { AdminPanel } from './components/AdminPanel';
@@ -16,12 +16,12 @@ import { WhyWritgo } from './components/WhyWritgo';
 import { CategoryGrid } from './components/CategoryGrid';
 import { LatestArticlesPreview } from './components/LatestArticlesPreview';
 
-import { Category, GrowthItem, BlogPost, User } from './types';
+import { Category, GrowthItem, BlogPost, User, BlogStatus } from './types';
 import { searchAiRecommendations } from './services/geminiService';
 import * as db from './services/db';
 import * as auth from './services/auth';
 
-type ViewState = 'HOME' | 'ITEM_DETAIL' | 'BLOG' | 'BLOG_DETAIL' | 'BLOG_NEW' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN';
+type ViewState = 'HOME' | 'ITEM_DETAIL' | 'BLOG' | 'BLOG_DETAIL' | 'BLOG_NEW' | 'BLOG_EDIT' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN';
 
 const App: React.FC = () => {
   // Application Data
@@ -41,6 +41,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('HOME');
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedItem, setSelectedItem] = useState<GrowthItem | null>(null);
+  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
 
   // Convert path-based routes to hash-based routes on initial load
   // This handles cases where users navigate directly to /admin, /blog, etc.
@@ -135,7 +136,17 @@ const App: React.FC = () => {
               return;
           }
           if (hash === '#/admin/blog/new') {
+              setEditingPost(null);
               setCurrentView('BLOG_NEW');
+          } else if (hash.startsWith('#/admin/blog/edit/')) {
+              const postId = hash.replace('#/admin/blog/edit/', '');
+              const postToEdit = blogPosts.find(p => p.id === postId);
+              if (postToEdit) {
+                  setEditingPost(postToEdit);
+                  setCurrentView('BLOG_EDIT');
+              } else {
+                  window.location.hash = '#/admin';
+              }
           } else if (hash === '#/admin/tool/new') {
               setCurrentView('TOOL_NEW');
           } else {
@@ -153,7 +164,7 @@ const App: React.FC = () => {
           window.addEventListener('hashchange', handleHashChange);
           return () => window.removeEventListener('hashchange', handleHashChange);
       }
-  }, [isLoading]); 
+  }, [isLoading, blogPosts]); 
 
   const handleLogin = (loggedInUser: User) => {
     setUser(loggedInUser);
@@ -175,6 +186,20 @@ const App: React.FC = () => {
   const handleDeletePost = async (postId: string) => {
     const updatedPosts = await db.deletePost(postId);
     setBlogPosts(updatedPosts);
+  };
+
+  const handleEditPost = (post: BlogPost) => {
+    window.location.hash = `#/admin/blog/edit/${post.id}`;
+  };
+
+  const handleUpdatePostStatus = async (postId: string, status: BlogStatus) => {
+    const posts = await db.getPosts();
+    const postToUpdate = posts.find(p => p.id === postId);
+    if (postToUpdate) {
+      const updatedPost = { ...postToUpdate, status, updatedAt: new Date().toISOString() };
+      const updatedPosts = await db.savePost(updatedPost);
+      setBlogPosts(updatedPosts);
+    }
   };
 
   const handleCreateUser = async (email: string, password: string, name: string, role: 'ADMIN' | 'USER') => {
@@ -220,7 +245,7 @@ const App: React.FC = () => {
   };
 
   const handleNavigate = (page: ViewState) => {
-    if ((page === 'BLOG_NEW' || page === 'TOOL_NEW' || page === 'ADMIN') && !user) {
+    if ((page === 'BLOG_NEW' || page === 'BLOG_EDIT' || page === 'TOOL_NEW' || page === 'ADMIN') && !user) {
       window.location.hash = '#/login';
       return;
     }
@@ -231,6 +256,7 @@ const App: React.FC = () => {
         case 'ADMIN': window.location.hash = '#/admin'; break;
         case 'LOGIN': window.location.hash = '#/login'; break;
         case 'BLOG_NEW': window.location.hash = '#/admin/blog/new'; break;
+        case 'BLOG_EDIT': window.location.hash = '#/admin'; break;
         case 'TOOL_NEW': window.location.hash = '#/admin/tool/new'; break;
         default: window.location.hash = '#/';
     }
@@ -247,6 +273,7 @@ const App: React.FC = () => {
   const handleSaveBlogPost = async (newPost: BlogPost) => {
       const updatedPosts = await db.savePost(newPost);
       setBlogPosts(updatedPosts);
+      setEditingPost(null);
       window.location.hash = `#/blog/${newPost.slug}`;
   };
 
@@ -290,8 +317,10 @@ const App: React.FC = () => {
                 onNavigate={handleNavigate}
                 onViewItem={handleViewItem}
                 onViewPost={handleReadPost}
+                onEditPost={handleEditPost}
                 onDeleteItem={handleDeleteItem}
                 onDeletePost={handleDeletePost}
+                onUpdatePostStatus={handleUpdatePostStatus}
                 onCreateUser={handleCreateUser}
                 onUpdateUser={handleUpdateUser}
                 onDeleteUser={handleDeleteUser}
@@ -362,15 +391,25 @@ const App: React.FC = () => {
 
         {currentView === 'BLOG' && (
           <BlogList 
-            posts={blogPosts} 
+            posts={blogPosts.filter(p => (p.status || 'published') === 'published')} 
             onReadPost={handleReadPost}
           />
         )}
 
         {currentView === 'BLOG_NEW' && (
-            <BlogGenerator 
+            <BlogEditor 
                 onSave={handleSaveBlogPost}
                 onCancel={() => handleNavigate('ADMIN')}
+                allPosts={blogPosts}
+            />
+        )}
+
+        {currentView === 'BLOG_EDIT' && editingPost && (
+            <BlogEditor 
+                onSave={handleSaveBlogPost}
+                onCancel={() => handleNavigate('ADMIN')}
+                existingPost={editingPost}
+                allPosts={blogPosts}
             />
         )}
 
@@ -384,7 +423,9 @@ const App: React.FC = () => {
         {currentView === 'BLOG_DETAIL' && selectedPost && (
           <BlogPostView 
             post={selectedPost} 
-            onBack={() => handleNavigate('BLOG')} 
+            onBack={() => handleNavigate('BLOG')}
+            relatedPosts={blogPosts}
+            onReadPost={handleReadPost}
           />
         )}
 
