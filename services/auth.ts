@@ -1,8 +1,20 @@
 import { User } from '../types';
 
-// Stored users interface with password hash simulation
+// ============================================================================
+// DEMO AUTHENTICATION SERVICE
+// ============================================================================
+// WARNING: This is a demo/prototype implementation using localStorage.
+// In a production environment, you would:
+// 1. Use a proper backend with secure API endpoints
+// 2. Hash passwords using bcrypt or argon2 on the server
+// 3. Use secure HTTP-only cookies or JWT tokens
+// 4. Implement proper session management
+// 5. Add rate limiting and brute force protection
+// ============================================================================
+
+// Stored users interface with password (demo only - would be hashed in production)
 interface StoredUser extends User {
-  passwordHash: string;
+  passwordHash: string; // In production, this would be a bcrypt/argon2 hash
 }
 
 const DEFAULT_USERS: StoredUser[] = [
@@ -12,7 +24,8 @@ const DEFAULT_USERS: StoredUser[] = [
     name: 'Writgo Admin',
     role: 'ADMIN',
     avatarUrl: 'https://ui-avatars.com/api/?name=Writgo+Admin&background=3b82f6&color=fff',
-    passwordHash: 'CM120309cm!!' // In production, this would be properly hashed
+    // DEMO ONLY: In production, use bcrypt.hash(password, saltRounds)
+    passwordHash: 'CM120309cm!!'
   }
 ];
 
@@ -55,6 +68,7 @@ export const login = async (email: string, password: string): Promise<User> => {
   const users = getUsers();
   const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
   
+  // DEMO ONLY: In production, use bcrypt.compare(password, user.passwordHash)
   if (user && user.passwordHash === password) {
     const sessionToken = generateSessionToken();
     const { passwordHash, ...userWithoutPassword } = user;
@@ -110,6 +124,7 @@ export const createUser = async (
     name,
     role,
     avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${role === 'ADMIN' ? '3b82f6' : '10b981'}&color=fff`,
+    // DEMO ONLY: In production, use bcrypt.hash(password, saltRounds)
     passwordHash: password
   };
   
@@ -146,6 +161,7 @@ export const updateUser = async (
     ...(updates.name && { name: updates.name }),
     ...(updates.email && { email: updates.email }),
     ...(updates.role && { role: updates.role }),
+    // DEMO ONLY: In production, use bcrypt.hash(password, saltRounds)
     ...(updates.password && { passwordHash: updates.password }),
     avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(updates.name || users[userIndex].name)}&background=${(updates.role || users[userIndex].role) === 'ADMIN' ? '3b82f6' : '10b981'}&color=fff`
   };

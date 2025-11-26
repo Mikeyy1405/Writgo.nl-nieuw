@@ -269,6 +269,8 @@ const App: React.FC = () => {
                 posts={blogPosts}
                 users={allUsers}
                 onNavigate={handleNavigate}
+                onViewItem={handleViewItem}
+                onViewPost={handleReadPost}
                 onDeleteItem={handleDeleteItem}
                 onDeletePost={handleDeletePost}
                 onCreateUser={handleCreateUser}

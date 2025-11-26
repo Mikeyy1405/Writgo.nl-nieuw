@@ -9,6 +9,8 @@ interface AdminPanelProps {
   posts: BlogPost[];
   users: User[];
   onNavigate: (view: 'BLOG_NEW' | 'TOOL_NEW' | 'HOME' | 'BLOG') => void;
+  onViewItem: (item: GrowthItem) => void;
+  onViewPost: (post: BlogPost) => void;
   onDeleteItem: (itemId: string) => void;
   onDeletePost: (postId: string) => void;
   onCreateUser: (email: string, password: string, name: string, role: 'ADMIN' | 'USER') => Promise<void>;
@@ -22,6 +24,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   posts,
   users,
   onNavigate,
+  onViewItem,
+  onViewPost,
   onDeleteItem,
   onDeletePost,
   onCreateUser,
@@ -270,7 +274,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <td className="px-6 py-4"><span className="bg-slate-800 px-2 py-1 rounded text-xs border border-slate-700">{item.category}</span></td>
                     <td className="px-6 py-4 text-right">
                       <button
-                        onClick={() => window.location.hash = `#/tool/${item.slug}`}
+                        onClick={() => onViewItem(item)}
                         className="text-brand-400 hover:text-brand-300 mr-4"
                         title="Bekijken"
                       >
@@ -327,7 +331,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <td className="px-6 py-4">{post.date}</td>
                     <td className="px-6 py-4 text-right">
                       <button
-                        onClick={() => window.location.hash = `#/blog/${post.slug}`}
+                        onClick={() => onViewPost(post)}
                         className="text-brand-400 hover:text-brand-300 mr-4"
                         title="Bekijken"
                       >
