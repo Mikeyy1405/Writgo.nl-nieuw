@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite preview"
+    "start": "vite preview --host"
   },
   "dependencies": {
     "react": "^19.2.0",
