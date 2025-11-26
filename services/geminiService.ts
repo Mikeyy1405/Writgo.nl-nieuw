@@ -213,23 +213,63 @@ export const generateToolMetadata = async (url: string, rawText: string): Promis
         Je bent de Hoofdredacteur van Writgo.nl, dé autoriteit op het gebied van online cursussen en software reviews.
         Je ontvangt content van een landingspagina (cursus, software, tool, e-book).
         
-        Genereer een ZEER UITGEBREIDE review pagina. Het moet lijken op een artikel van Tweakers, Frankwatching of The Verge.
-        Wees kritisch, eerlijk en volledig.
+        Genereer een ZEER UITGEBREIDE en PROFESSIONELE review pagina zoals de voorbeelden van Plug & Pay, Heijsen en The Huddle.
+        Het moet lijken op een artikel van Tweakers, Frankwatching of The Verge - diepgaand, eerlijk en volledig.
         
-        Scope: Alles mag. Van marketing tools tot cursussen over hondentraining of programmeren.
+        KRITIEKE VEREISTEN - Zorg ervoor dat ALLE velden volledig zijn ingevuld:
         
-        Instructies per veld:
-        - executiveSummary: Een 'Bottom Line' samenvatting.
-        - reviewContent: Schrijf 4 unieke, diepgaande paragrafen (Intro, Analyse, Gebruik, Conclusie).
-        - specifications: Haal technische feiten of cursus-details uit de tekst (Duur, Taal, Niveau, Certificaat).
-        - alternativesAnalysis: Noem 2-3 concurrenten en vergelijk.
-        - bestFor: Voor wie is dit? (Bijv: "Startende ondernemers", "Hobby fotografen").
-        - notFor: Voor wie niet?
-        - category: Kies uit: Marketing, Business, Development, Design, Lifestyle, Finance, Productivity.
+        1. executiveSummary: Schrijf een krachtige "Bottom Line" samenvatting van 3-4 zinnen die de essentie vat.
+        
+        2. reviewContent: Schrijf 5 unieke, diepgaande paragrafen van minimaal 100 woorden elk:
+           - introduction: Introduceer het probleem dat deze tool/cursus oplost
+           - featuresAnalysis: Diepgaande analyse van de belangrijkste functies en wat ze uniek maakt
+           - easeOfUse: Hoe gebruiksvriendelijk is het? Voor wie is het geschikt?
+           - supportQuality: Kwaliteit van support, documentatie en community
+           - verdict: Eindoordeel en aanbeveling
+        
+        3. scores: Geef realistische scores (0-10) voor:
+           - usability, priceValue, features, support
+        
+        4. pros en cons: Minimaal 3-4 concrete, specifieke voor- en nadelen
+        
+        5. features: Minimaal 4-5 belangrijke features of modules
+        
+        6. specifications: Minimaal 4-5 technische specs (Type, Taal, Platform, etc.)
+        
+        7. userTestimonials: Genereer 2-3 realistische gebruikers-reviews met naam, rol, rating en tekst
+        
+        8. pricingTiers: Als prijsinformatie beschikbaar is, geef 2-3 pakketten met features
+        
+        9. faq: Minimaal 3-4 veelgestelde vragen met uitgebreide antwoorden
+        
+        10. alternatives en alternativesAnalysis: Noem 2-3 concurrenten en schrijf een vergelijking van 100+ woorden
+        
+        11. bestFor: Minimaal 3 doelgroepen die perfect passen
+        
+        12. notFor: Minimaal 2 groepen voor wie dit niet geschikt is
+        
+        13. targetAudience: Minimaal 3 specifieke doelgroepen
+        
+        14. reviewAuthor: Genereer een passende expert met naam, rol en expertise samenvatting
+        
+        15. rating: Realistische beoordeling tussen 4.5 en 5.0 voor goede producten, lager voor mindere
+        
+        16. tags: Minimaal 4-5 relevante tags
+        
+        17. category: Kies uit: Marketing, Business, Development, Design, Lifestyle, Finance, Productivity
+        
+        18. type: Cursus, App/Tool, E-book, of Community/Platform
+        
+        BELANGRIJKE STIJLRICHTLIJNEN:
+        - Schrijf in het Nederlands
+        - Wees specifiek en concreet, geen vage algemene statements
+        - Gebruik cijfers en feiten waar mogelijk
+        - Schrijf alsof je een echte expert bent die het product kent
+        - Maak het levendig en boeiend om te lezen
         
         Media:
-        - videoUrl: Zoek naar YouTube embed URLs.
-        - detectedImageUrls: Extract afbeeldingen uit de broncode.
+        - videoUrl: Zoek naar YouTube embed URLs in de HTML
+        - detectedImageUrls: Extract afbeelding URLs uit de broncode (img src, og:image)
     `;
 
     const responseSchema = {
