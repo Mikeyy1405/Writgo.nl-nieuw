@@ -125,6 +125,12 @@ export const SEOMeta: React.FC<SEOMetaProps> = ({ post, baseUrl = 'https://writg
   // Note: In a real implementation with Next.js, you would use next/head
   // For this client-side app, we'll update document head directly
   React.useEffect(() => {
+    // Store original title to restore on cleanup
+    const originalTitle = document.title;
+    
+    // Track created meta tags for cleanup
+    const createdElements: HTMLElement[] = [];
+
     // Update page title
     document.title = post.seoTitle || `${post.title} | Writgo Academy`;
 
@@ -136,6 +142,7 @@ export const SEOMeta: React.FC<SEOMetaProps> = ({ post, baseUrl = 'https://writg
         meta = document.createElement('meta');
         meta.setAttribute(attr, name);
         document.head.appendChild(meta);
+        createdElements.push(meta);
       }
       meta.content = content;
     };
@@ -178,6 +185,7 @@ export const SEOMeta: React.FC<SEOMetaProps> = ({ post, baseUrl = 'https://writg
 
     // Canonical URL
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    const createdCanonical = !canonical;
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.rel = 'canonical';
@@ -185,6 +193,14 @@ export const SEOMeta: React.FC<SEOMetaProps> = ({ post, baseUrl = 'https://writg
     }
     canonical.href = `${baseUrl}/blog/${post.slug}`;
 
+    // Cleanup function - remove created elements and restore original title
+    return () => {
+      document.title = originalTitle;
+      createdElements.forEach(el => el.remove());
+      if (createdCanonical && canonical) {
+        canonical.remove();
+      }
+    };
   }, [post, baseUrl]);
 
   return null;

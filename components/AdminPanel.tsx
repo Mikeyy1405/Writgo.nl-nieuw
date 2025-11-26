@@ -53,14 +53,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [blogSortOrder, setBlogSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
 
+  // Pre-calculate SEO scores for all posts to avoid recalculating during sort
+  const postsWithSeoScores = useMemo(() => 
+    posts.map(post => ({
+      post,
+      seoScore: post.seoScore ?? calculateSEOScore(post)
+    })),
+    [posts]
+  );
+
   // Filtered and sorted posts
   const filteredPosts = useMemo(() => {
-    let result = [...posts];
+    let result = [...postsWithSeoScores];
 
     // Search filter
     if (blogSearch.trim()) {
       const searchLower = blogSearch.toLowerCase();
-      result = result.filter(post => 
+      result = result.filter(({ post }) => 
         post.title.toLowerCase().includes(searchLower) ||
         post.author.toLowerCase().includes(searchLower) ||
         post.tags?.some(tag => tag.toLowerCase().includes(searchLower))
@@ -69,12 +78,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
     // Status filter
     if (blogStatusFilter !== 'all') {
-      result = result.filter(post => (post.status || 'published') === blogStatusFilter);
+      result = result.filter(({ post }) => (post.status || 'published') === blogStatusFilter);
     }
 
     // Category filter
     if (blogCategoryFilter !== 'all') {
-      result = result.filter(post => post.category === blogCategoryFilter);
+      result = result.filter(({ post }) => post.category === blogCategoryFilter);
     }
 
     // Sorting
@@ -82,23 +91,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       let comparison = 0;
       switch (blogSortBy) {
         case 'title':
-          comparison = a.title.localeCompare(b.title);
+          comparison = a.post.title.localeCompare(b.post.title);
           break;
         case 'seoScore':
-          comparison = (calculateSEOScore(a) || 0) - (calculateSEOScore(b) || 0);
+          comparison = a.seoScore - b.seoScore;
           break;
         case 'views':
-          comparison = (a.viewCount || 0) - (b.viewCount || 0);
+          comparison = (a.post.viewCount || 0) - (b.post.viewCount || 0);
           break;
         case 'date':
         default:
-          comparison = new Date(a.publishedAt || a.date).getTime() - new Date(b.publishedAt || b.date).getTime();
+          comparison = new Date(a.post.publishedAt || a.post.date).getTime() - new Date(b.post.publishedAt || b.post.date).getTime();
       }
       return blogSortOrder === 'asc' ? comparison : -comparison;
     });
 
     return result;
-  }, [posts, blogSearch, blogStatusFilter, blogCategoryFilter, blogSortBy, blogSortOrder]);
+  }, [postsWithSeoScores, blogSearch, blogStatusFilter, blogCategoryFilter, blogSortBy, blogSortOrder]);
 
   // Handle bulk actions
   const handleBulkAction = (action: 'delete' | 'publish' | 'draft' | 'archive') => {
@@ -128,7 +137,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     if (selectedPosts.length === filteredPosts.length) {
       setSelectedPosts([]);
     } else {
-      setSelectedPosts(filteredPosts.map(p => p.id));
+      setSelectedPosts(filteredPosts.map(({ post }) => post.id));
     }
   };
 
@@ -530,9 +539,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
-                {filteredPosts.map(post => {
-                  const postSeoScore = post.seoScore || calculateSEOScore(post);
-                  return (
+                {filteredPosts.map(({ post, seoScore }) => (
                     <tr key={post.id} className="hover:bg-slate-800/50 transition-colors">
                       <td className="px-4 py-4">
                         <input
@@ -568,7 +575,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         </span>
                       </td>
                       <td className="px-4 py-4">
-                        <SEOScoreDisplay score={postSeoScore} />
+                        <SEOScoreDisplay score={seoScore} />
                       </td>
                       <td className="px-4 py-4">
                         {(post.viewCount || 0).toLocaleString('nl-NL')}
@@ -604,8 +611,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         </button>
                       </td>
                     </tr>
-                  );
-                })}
+                ))}
                 {filteredPosts.length === 0 && (
                   <tr>
                     <td colSpan={8} className="px-6 py-12 text-center text-slate-500">

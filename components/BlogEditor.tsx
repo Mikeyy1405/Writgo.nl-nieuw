@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { BlogPost, Category, BlogStatus } from '../types';
 import { generateBlogPost } from '../services/geminiService';
 import { calculateSEOScore, SEOScoreDisplay } from './SEOSchema';
@@ -100,8 +100,12 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onSave, onCancel, existi
   // Key takeaways input state
   const [takeawayInput, setTakeawayInput] = useState('');
 
-  // Calculate SEO score
-  const seoScore = calculateSEOScore(formData as BlogPost);
+  // Use ref for autoSave to avoid recreating the callback
+  const formDataRef = useRef(formData);
+  formDataRef.current = formData;
+
+  // Calculate SEO score - memoized
+  const seoScore = useMemo(() => calculateSEOScore(formData as BlogPost), [formData]);
 
   // Auto-generate slug from title
   useEffect(() => {
@@ -113,20 +117,25 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onSave, onCancel, existi
     }
   }, [formData.title, existingPost]);
 
-  // Auto-save draft (debounced)
+  // Auto-save draft (debounced) - using ref to avoid dependency issues
   const autoSave = useCallback(() => {
     setAutoSaveStatus('saving');
-    // In a real implementation, this would save to localStorage or backend
-    const draft = JSON.stringify(formData);
-    localStorage.setItem(`blog_draft_${formData.id}`, draft);
+    const draft = JSON.stringify(formDataRef.current);
+    localStorage.setItem(`blog_draft_${formDataRef.current.id}`, draft);
     setTimeout(() => setAutoSaveStatus('saved'), 500);
-  }, [formData]);
+  }, []);
 
   useEffect(() => {
     setAutoSaveStatus('unsaved');
     const timer = setTimeout(autoSave, 2000);
     return () => clearTimeout(timer);
   }, [formData, autoSave]);
+
+  // Memoize available posts for linking (exclude current post)
+  const availableLinkPosts = useMemo(() => 
+    allPosts.filter(post => post.id !== formData.id),
+    [allPosts, formData.id]
+  );
 
   const handleInputChange = (field: keyof BlogPost, value: unknown) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -787,13 +796,11 @@ export const BlogEditor: React.FC<BlogEditorProps> = ({ onSave, onCancel, existi
           Selecteer blogs om als gerelateerde content te tonen. Dit verbetert interne linking en SEO.
         </p>
 
-        {allPosts.length === 0 ? (
+        {availableLinkPosts.length === 0 ? (
           <p className="text-slate-500 text-sm">Geen andere blog posts beschikbaar.</p>
         ) : (
           <div className="space-y-2 max-h-80 overflow-y-auto custom-scrollbar">
-            {allPosts
-              .filter(post => post.id !== formData.id)
-              .map(post => (
+            {availableLinkPosts.map(post => (
                 <label
                   key={post.id}
                   className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
