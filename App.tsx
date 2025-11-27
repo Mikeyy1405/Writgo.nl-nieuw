@@ -16,6 +16,8 @@ import { WhyWritgo } from './components/WhyWritgo';
 import { CategoryGrid } from './components/CategoryGrid';
 import { LatestArticlesPreview } from './components/LatestArticlesPreview';
 
+import { Category, GrowthItem, BlogPost, User } from './types';
+import { searchAiRecommendations } from './services/claudeService';
 import { Category, GrowthItem, BlogPost, User, BlogStatus } from './types';
 import { searchAiRecommendations } from './services/geminiService';
 import * as db from './services/db';

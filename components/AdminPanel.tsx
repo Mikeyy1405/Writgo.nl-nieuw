@@ -853,7 +853,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">Gemini API Key</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Claude API Key</label>
               <div className="flex gap-2">
                 <input
                   type="password"
