@@ -1,11 +1,11 @@
 
 
-import { GrowthItem, BlogPost } from '../types';
-import { STATIC_ITEMS, STATIC_BLOG_POSTS } from '../constants';
+import { GrowthItem, BlogPost, ContentType } from '../types';
+import { STATIC_ITEMS, STATIC_BLOG_POSTS, STATIC_COURSES, STATIC_TOOLS } from '../constants';
 
 // Versiebeheer voor LocalStorage.
 // Als we de constante data veranderen, hogen we dit op om de cache te overschrijven.
-const DB_VERSION = '3.0';
+const DB_VERSION = '4.0';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -29,6 +29,30 @@ export const getItems = async (): Promise<GrowthItem[]> => {
   checkVersion(); // Ensure data is up to date
   const stored = localStorage.getItem('writgo_items');
   return stored ? JSON.parse(stored) : STATIC_ITEMS;
+};
+
+// Get only courses
+export const getCourses = async (): Promise<GrowthItem[]> => {
+  const items = await getItems();
+  return items.filter(i => i.contentType === ContentType.CURSUS);
+};
+
+// Get only tools
+export const getTools = async (): Promise<GrowthItem[]> => {
+  const items = await getItems();
+  return items.filter(i => i.contentType === ContentType.TOOL);
+};
+
+// Get course by slug
+export const getCourseBySlug = async (slug: string): Promise<GrowthItem | undefined> => {
+  const courses = await getCourses();
+  return courses.find(c => c.slug === slug);
+};
+
+// Get tool by slug
+export const getToolBySlug = async (slug: string): Promise<GrowthItem | undefined> => {
+  const tools = await getTools();
+  return tools.find(t => t.slug === slug);
 };
 
 export const getItemById = async (id: string): Promise<GrowthItem | undefined> => {

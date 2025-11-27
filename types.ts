@@ -17,6 +17,12 @@ export enum ItemType {
   PLATFORM = 'Community'
 }
 
+// New: Content type for routing distinction between courses and tools
+export enum ContentType {
+  CURSUS = 'cursus',
+  TOOL = 'tool'
+}
+
 export interface FAQItem {
   question: string;
   answer: string;
@@ -71,12 +77,14 @@ export interface GrowthItem {
   longDescription?: string; // Deprecated
   category: Category;
   type: ItemType;
+  contentType: ContentType; // New: distinguishes between cursus and tool for routing
   priceLabel: string;
   rating: number; // Overall rating
   imageUrl: string;
   affiliateLink: string;
   tags: string[];
   isAiGenerated?: boolean;
+  provider?: string; // New: platform/provider name (e.g., "IMU", "Udemy")
   
   // Rich Review Fields
   reviewContent?: ReviewContent;
@@ -109,6 +117,8 @@ export interface GrowthItem {
   targetAudience?: string[];
   faq?: FAQItem[];
   seoDescription?: string;
+  seoTitle?: string; // New: SEO meta title
+  seoKeywords?: string[]; // New: SEO keywords
 }
 
 export type BlogStatus = 'draft' | 'published' | 'archived';

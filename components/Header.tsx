@@ -4,7 +4,7 @@ import { User } from '../types';
 
 interface HeaderProps {
   currentView: string;
-  onNavigate: (view: 'HOME' | 'BLOG' | 'BLOG_NEW' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN') => void;
+  onNavigate: (view: 'HOME' | 'BLOG' | 'BLOG_NEW' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN' | 'CURSUSSEN' | 'TOOLS') => void;
   user: User | null;
   onLogout: () => void;
 }
@@ -20,15 +20,29 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, user, o
           <div className="w-8 h-8 bg-gradient-to-br from-brand-600 to-brand-400 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20">
             W
           </div>
-          <span className="text-xl font-bold text-white tracking-tight">Writgo <span className="text-brand-400">Academy</span></span>
+          <span className="text-xl font-bold text-white tracking-tight">Writgo</span>
         </div>
         
-        <nav className="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
+        <nav className="hidden md:flex space-x-6 text-sm font-medium text-slate-400">
           <button 
             onClick={() => onNavigate('HOME')}
             className={`transition-colors hover:text-white ${currentView === 'HOME' ? 'text-white font-bold' : ''}`}
           >
-            Catalogus
+            Home
+          </button>
+          <button 
+            onClick={() => onNavigate('CURSUSSEN')}
+            className={`transition-colors hover:text-white flex items-center ${currentView === 'CURSUSSEN' || currentView === 'CURSUS_DETAIL' ? 'text-brand-400 font-bold' : ''}`}
+          >
+            <i className="fas fa-graduation-cap mr-2 text-xs"></i>
+            Cursussen
+          </button>
+          <button 
+            onClick={() => onNavigate('TOOLS')}
+            className={`transition-colors hover:text-white flex items-center ${currentView === 'TOOLS' || currentView === 'TOOL_DETAIL' ? 'text-accent-400 font-bold' : ''}`}
+          >
+            <i className="fas fa-tools mr-2 text-xs"></i>
+            Tools
           </button>
           <button 
             onClick={() => onNavigate('BLOG')}
@@ -70,9 +84,9 @@ export const Header: React.FC<HeaderProps> = ({ currentView, onNavigate, user, o
                 >
                   Admin
                 </button>
-                <button className="bg-accent-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-accent-600 transition-all shadow-lg shadow-accent-500/20 hover:shadow-accent-500/30">
-                  Top Deals
-                </button>
+                <a href="#/tools" className="bg-accent-500 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-accent-600 transition-all shadow-lg shadow-accent-500/20 hover:shadow-accent-500/30">
+                  Top Tools
+                </a>
              </div>
           )}
         </div>

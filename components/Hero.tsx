@@ -25,14 +25,14 @@ export const Hero: React.FC<HeroProps> = ({ onSearch, isSearching }) => {
 
       <div className="container mx-auto px-4 relative z-10 text-center">
         <span className="inline-block py-1 px-3 rounded-full bg-slate-800 border border-slate-700 text-brand-400 text-xs font-semibold mb-6 tracking-wide uppercase shadow-sm">
-          De #1 Cursus Vergelijker van NL
+          Cursussen & Tools Vergelijker
         </span>
         <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
-          Vind de beste cursus voor <br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-accent-400">elke vaardigheid</span>
+          Vind de beste <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-brand-500">cursussen</span> en <br/>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-400 to-accent-500">tools</span> voor jouw groei
         </h1>
         <p className="text-lg text-slate-400 mb-10 max-w-2xl mx-auto">
-          Van marketing en crypto tot honden trainen en programmeren. Wij vergelijken duizenden cursussen en tools zodat jij de juiste keuze maakt.
+          Van marketing cursussen tot productiviteit tools. Wij vergelijken duizenden opties zodat jij de juiste keuze maakt voor jouw carrière en business.
         </p>
 
         <form onSubmit={handleSubmit} className="max-w-2xl mx-auto relative">
@@ -44,7 +44,7 @@ export const Hero: React.FC<HeroProps> = ({ onSearch, isSearching }) => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Wat wil je leren? (bijv. 'Photoshop', 'Beleggen', 'Spaans')"
+              placeholder="Wat wil je leren of bereiken? (bijv. 'SEO', 'Design tool', 'Python')"
               className="block w-full pl-12 pr-36 py-4 text-white placeholder-slate-500 bg-slate-900/80 border border-slate-700 rounded-2xl focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none shadow-xl transition-all"
             />
             <button
@@ -57,16 +57,28 @@ export const Hero: React.FC<HeroProps> = ({ onSearch, isSearching }) => {
           </div>
           <p className="text-xs text-slate-500 mt-3">
             <i className="fas fa-check-circle mr-1 text-green-500"></i>
-            Onafhankelijke reviews & deep-dives
+            Onafhankelijke reviews & uitgebreide vergelijkingen
           </p>
         </form>
 
-        <div className="mt-12 flex flex-wrap justify-center gap-4 text-sm text-slate-500">
+        {/* Quick Links */}
+        <div className="mt-12 flex flex-wrap justify-center gap-4">
+          <a href="#/cursussen" className="inline-flex items-center px-5 py-3 bg-brand-500/10 border border-brand-500/30 rounded-xl text-brand-400 font-medium hover:bg-brand-500/20 transition-all">
+            <i className="fas fa-graduation-cap mr-2"></i>
+            Bekijk alle Cursussen
+          </a>
+          <a href="#/tools" className="inline-flex items-center px-5 py-3 bg-accent-500/10 border border-accent-500/30 rounded-xl text-accent-400 font-medium hover:bg-accent-500/20 transition-all">
+            <i className="fas fa-tools mr-2"></i>
+            Bekijk alle Tools
+          </a>
+        </div>
+
+        <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-slate-500">
           <span>Populair:</span>
           <button onClick={() => onSearch('Marketing')} className="hover:text-brand-400 underline decoration-dotted decoration-slate-600 hover:decoration-brand-400 transition-colors">Marketing</button>
           <button onClick={() => onSearch('Programmeren')} className="hover:text-brand-400 underline decoration-dotted decoration-slate-600 hover:decoration-brand-400 transition-colors">Programmeren</button>
-          <button onClick={() => onSearch('Crypto')} className="hover:text-brand-400 underline decoration-dotted decoration-slate-600 hover:decoration-brand-400 transition-colors">Crypto</button>
-          <button onClick={() => onSearch('Fotografie')} className="hover:text-brand-400 underline decoration-dotted decoration-slate-600 hover:decoration-brand-400 transition-colors">Fotografie</button>
+          <button onClick={() => onSearch('Design')} className="hover:text-brand-400 underline decoration-dotted decoration-slate-600 hover:decoration-brand-400 transition-colors">Design</button>
+          <button onClick={() => onSearch('Productiviteit')} className="hover:text-brand-400 underline decoration-dotted decoration-slate-600 hover:decoration-brand-400 transition-colors">Productiviteit</button>
         </div>
       </div>
     </div>
