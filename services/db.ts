@@ -10,7 +10,7 @@
  */
 
 import { GrowthItem, BlogPost, ContentType } from '../types';
-import { STATIC_ITEMS, STATIC_BLOG_POSTS, STATIC_COURSES, STATIC_TOOLS } from '../constants';
+import { STATIC_ITEMS, STATIC_BLOG_POSTS } from '../constants';
 import { supabase, isSupabaseConfigured } from '../config/supabase';
 import { DbCourse, DbBlogPost } from '../database';
 
