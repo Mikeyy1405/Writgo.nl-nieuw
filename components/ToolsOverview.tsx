@@ -39,16 +39,25 @@ export const ToolsOverview: React.FC<ToolsOverviewProps> = ({ tools, onViewTool 
       );
     }
     
+    // Price filtering - use isFree field if available, fallback to string matching
     if (priceFilter === 'FREE') {
-      results = results.filter(t => 
-        t.priceLabel.toLowerCase().includes('gratis') || 
-        t.priceLabel.toLowerCase().includes('free')
-      );
+      results = results.filter(t => {
+        if (t.isFree !== undefined) {
+          return t.isFree;
+        }
+        // Fallback to string matching for backward compatibility
+        const label = t.priceLabel.toLowerCase();
+        return label.includes('gratis') || label.includes('free') || label.startsWith('€0');
+      });
     } else if (priceFilter === 'PAID') {
-      results = results.filter(t => 
-        !t.priceLabel.toLowerCase().includes('gratis') && 
-        !t.priceLabel.toLowerCase().includes('free')
-      );
+      results = results.filter(t => {
+        if (t.isFree !== undefined) {
+          return !t.isFree;
+        }
+        // Fallback to string matching for backward compatibility
+        const label = t.priceLabel.toLowerCase();
+        return !label.includes('gratis') && !label.includes('free') && !label.startsWith('€0');
+      });
     }
     
     setFilteredTools(results);

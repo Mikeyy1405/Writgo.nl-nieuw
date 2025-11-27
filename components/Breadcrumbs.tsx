@@ -9,6 +9,24 @@ interface BreadcrumbsProps {
   items: BreadcrumbItem[];
 }
 
+// Helper function to convert hash-based href to full URL for structured data
+const toFullUrl = (href: string): string => {
+  // Handle hash-based routes (e.g., "#/cursussen" -> "/cursussen")
+  if (href.startsWith('#/')) {
+    return `https://writgo.nl${href.substring(1)}`;
+  }
+  // Handle hash-only routes (e.g., "#/" -> "/")
+  if (href === '#/') {
+    return 'https://writgo.nl/';
+  }
+  // Handle absolute paths
+  if (href.startsWith('/')) {
+    return `https://writgo.nl${href}`;
+  }
+  // Fallback for any other format
+  return `https://writgo.nl/${href.replace('#', '')}`;
+};
+
 export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
@@ -41,7 +59,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
             "@type": "ListItem",
             "position": index + 1,
             "name": item.label,
-            "item": item.href ? `https://writgo.nl${item.href.replace('#', '')}` : undefined
+            "item": item.href ? toFullUrl(item.href) : undefined
           }))
         })}
       </script>

@@ -282,7 +282,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleNavigate = (page: ViewState | 'CURSUSSEN' | 'TOOLS') => {
+  const handleNavigate = (page: ViewState) => {
     if ((page === 'BLOG_NEW' || page === 'BLOG_EDIT' || page === 'TOOL_NEW' || page === 'ADMIN') && !user) {
       window.location.hash = '#/login';
       return;

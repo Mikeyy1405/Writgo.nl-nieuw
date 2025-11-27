@@ -79,6 +79,7 @@ export interface GrowthItem {
   type: ItemType;
   contentType: ContentType; // New: distinguishes between cursus and tool for routing
   priceLabel: string;
+  isFree?: boolean; // New: explicit flag for free items (for reliable filtering)
   rating: number; // Overall rating
   imageUrl: string;
   affiliateLink: string;
