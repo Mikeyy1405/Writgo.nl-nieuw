@@ -111,19 +111,54 @@ export interface GrowthItem {
   seoDescription?: string;
 }
 
+export type BlogStatus = 'draft' | 'published' | 'archived';
+
+export interface FeaturedImage {
+  url: string;
+  alt: string;
+  width?: number;
+  height?: number;
+}
+
+export interface ContentImage {
+  url: string;
+  alt: string;
+  caption?: string;
+  position: 'auto' | 'custom';
+  customPosition?: number; // percentage of content
+}
+
+export interface InternalLinks {
+  blogs: string[]; // blog IDs
+  products: string[]; // product IDs (GrowthItem IDs)
+}
+
 export interface BlogPost {
   id: string;
   slug: string;
   title: string;
+  seoTitle?: string; // max 60 characters
+  metaDescription?: string; // max 160 characters
   excerpt: string;
   content: string;
   author: string;
   date: string;
   imageUrl: string;
+  featuredImage?: FeaturedImage;
+  contentImage?: ContentImage;
   category: Category;
+  categories?: string[]; // multiple categories support
+  tags?: string[];
   readTime: string;
   keyTakeaways?: string[];
   faq?: FAQItem[];
+  internalLinks?: InternalLinks;
+  status?: BlogStatus;
+  publishedAt?: string;
+  updatedAt?: string;
+  createdAt?: string;
+  viewCount?: number;
+  seoScore?: number; // optional SEO score (0-100)
 }
 
 export interface User {

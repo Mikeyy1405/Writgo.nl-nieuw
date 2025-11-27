@@ -334,6 +334,8 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
     id: 'blog-seo-101',
     slug: 'wat-is-seo',
     title: 'Wat is SEO? Een complete gids voor beginners in 2024',
+    seoTitle: 'Wat is SEO? Complete Beginnersgids 2024 | Writgo',
+    metaDescription: 'Leer de basisprincipes van SEO en ontdek hoe je hoger scoort in Google. Complete gids voor beginners met praktische tips.',
     excerpt: 'Leer de basisprincipes van zoekmachineoptimalisatie (SEO) en ontdek hoe je hoger kunt scoren in Google om meer organisch verkeer naar je website te trekken.',
     content: `
       <h2>Wat betekent SEO precies?</h2>
@@ -355,7 +357,14 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
     author: 'Writgo Redactie',
     date: '25 Okt 2024',
     imageUrl: 'https://images.unsplash.com/photo-1562577309-2592ab84b1bc?auto=format&fit=crop&w=800&q=80',
+    featuredImage: {
+      url: 'https://images.unsplash.com/photo-1562577309-2592ab84b1bc?auto=format&fit=crop&w=800&q=80',
+      alt: 'SEO zoekmachine optimalisatie concept met zoekbalk',
+      width: 800,
+      height: 533
+    },
     category: Category.MARKETING,
+    tags: ['seo', 'google', 'zoekmachine', 'marketing', 'beginners'],
     readTime: '6 min',
     keyTakeaways: [
       "SEO is het optimaliseren van je site voor onbetaalde zoekresultaten.",
@@ -372,12 +381,24 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
         question: "Is SEO iets wat ik zelf kan doen?",
         answer: "Ja, de basis van SEO kun je zeker zelf leren en toepassen, vooral op het gebied van content. Voor technische SEO en geavanceerde linkbuilding is het vaak verstandig om een specialist in te schakelen."
       }
-    ]
+    ],
+    internalLinks: {
+      blogs: ['blog-aff-cursus-best'],
+      products: []
+    },
+    status: 'published',
+    publishedAt: '2024-10-25T10:00:00Z',
+    createdAt: '2024-10-20T08:00:00Z',
+    updatedAt: '2024-10-25T10:00:00Z',
+    viewCount: 1250,
+    seoScore: 85
   },
   {
     id: 'blog-aff-cursus-best',
     slug: 'beste-affiliate-marketing-cursus',
     title: 'De Beste Affiliate Marketing Cursus van Nederland (Vergelijking)',
+    seoTitle: 'Beste Affiliate Marketing Cursus Nederland 2024',
+    metaDescription: 'Vergelijk de beste affiliate marketing cursussen in Nederland. Ontdek welke cursus het beste bij jou past en start met verdienen.',
     excerpt: 'Wil je starten met affiliate marketing maar weet je niet waar te beginnen? We vergelijken de populairste cursussen in Nederland om je te helpen de juiste keuze te maken.',
     content: `
       <h2>Waar moet je op letten bij een Affiliate Marketing Cursus?</h2>
@@ -423,7 +444,14 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
     author: 'Sander de Vries',
     date: '22 Okt 2024',
     imageUrl: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=800&q=80',
+    featuredImage: {
+      url: 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=800&q=80',
+      alt: 'Affiliate marketing concept met laptop en geld',
+      width: 800,
+      height: 533
+    },
     category: Category.MARKETING,
+    tags: ['affiliate', 'marketing', 'cursus', 'online geld verdienen', 'passief inkomen'],
     readTime: '8 min',
     keyTakeaways: [
       "Kies een cursus die focust op een duurzame strategie zoals SEO.",
@@ -439,12 +467,24 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
         question: "Hoeveel kan ik verdienen met affiliate marketing?",
         answer: "De inkomsten variëren enorm, van een paar tientjes per maand tot duizenden euro's. Het hangt volledig af van je niche, de hoeveelheid verkeer die je genereert en de commissies van de producten die je promoot."
       }
-    ]
+    ],
+    internalLinks: {
+      blogs: ['blog-seo-101'],
+      products: []
+    },
+    status: 'published',
+    publishedAt: '2024-10-22T14:00:00Z',
+    createdAt: '2024-10-18T09:00:00Z',
+    updatedAt: '2024-10-22T14:00:00Z',
+    viewCount: 890,
+    seoScore: 78
   },
   {
     id: 'blog-bitvavo-rev',
     slug: 'bitvavo-review',
     title: 'Bitvavo Review 2024: Is dit de Beste Crypto Exchange?',
+    seoTitle: 'Bitvavo Review 2024: Beste Crypto Exchange?',
+    metaDescription: 'Complete Bitvavo review: kosten, veiligheid en gebruiksvriendelijkheid. Ontdek waarom dit de populairste crypto exchange in Nederland is.',
     excerpt: 'Bitvavo is de grootste en populairste crypto exchange van Nederland. In deze diepgaande review onderzoeken we de kosten, veiligheid en gebruiksvriendelijkheid.',
     content: `
       <h2>Wat is Bitvavo?</h2>
@@ -470,7 +510,14 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
     author: 'Emma Jansen',
     date: '18 Okt 2024',
     imageUrl: 'https://images.unsplash.com/photo-1621419739883-9a775cf35534?auto=format&fit=crop&w=800&q=80',
+    featuredImage: {
+      url: 'https://images.unsplash.com/photo-1621419739883-9a775cf35534?auto=format&fit=crop&w=800&q=80',
+      alt: 'Cryptocurrency Bitcoin en Ethereum munten',
+      width: 800,
+      height: 533
+    },
     category: Category.FINANCE,
+    tags: ['crypto', 'bitvavo', 'bitcoin', 'exchange', 'beleggen'],
     readTime: '7 min',
     keyTakeaways: [
         "Bitvavo is de grootste en meest gebruiksvriendelijke crypto exchange van Nederland.",
@@ -487,12 +534,24 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
         question: "Kan ik direct met iDEAL betalen?",
         answer: "Ja, Bitvavo ondersteunt iDEAL, Bancontact en bankoverschrijvingen, waardoor je heel eenvoudig euro's op je account kunt storten om crypto te kopen."
       }
-    ]
+    ],
+    internalLinks: {
+      blogs: ['blog-extra-geld'],
+      products: []
+    },
+    status: 'published',
+    publishedAt: '2024-10-18T11:00:00Z',
+    createdAt: '2024-10-15T10:00:00Z',
+    updatedAt: '2024-10-18T11:00:00Z',
+    viewCount: 2100,
+    seoScore: 82
   },
   {
     id: 'blog-extra-geld',
     slug: 'extra-geld-verdienen-naast-je-baan',
     title: '12 Realistische Manieren om Extra Geld te Verdienen Naast Je Baan',
+    seoTitle: '12 Manieren Extra Geld Verdienen Naast Je Baan 2024',
+    metaDescription: 'Ontdek 12 realistische side hustles om extra geld te verdienen naast je werk. Van freelancen tot verhuren - start vandaag nog!',
     excerpt: 'Zoek je een manier om je inkomen aan te vullen? Ontdek 12 concrete en realistische side hustles die je vandaag nog kunt starten, van online freelancen tot het verkopen van producten.',
     content: `
       <h2>Waarom een Side Hustle Starten?</h2>
@@ -517,7 +576,14 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
     author: 'Writgo Redactie',
     date: '15 Okt 2024',
     imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80',
+    featuredImage: {
+      url: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80',
+      alt: 'Extra geld verdienen concept met munten en laptop',
+      width: 800,
+      height: 533
+    },
     category: Category.FINANCE,
+    tags: ['side hustle', 'extra geld', 'bijverdienen', 'freelance', 'passief inkomen'],
     readTime: '9 min',
     keyTakeaways: [
         "Een side hustle biedt financiële vrijheid en de kans om nieuwe skills te leren.",
@@ -534,6 +600,16 @@ export const STATIC_BLOG_POSTS: BlogPost[] = [
         question: "Hoeveel tijd moet ik investeren?",
         answer: "Dat is volledig aan jou. Sommige side hustles kun je in een paar uur per week doen, terwijl andere kunnen uitgroeien tot een parttime of zelfs fulltime bezigheid. Begin klein en schaal op als je het leuk vindt en het rendabel is."
       }
-    ]
+    ],
+    internalLinks: {
+      blogs: ['blog-aff-cursus-best', 'blog-bitvavo-rev'],
+      products: []
+    },
+    status: 'published',
+    publishedAt: '2024-10-15T09:00:00Z',
+    createdAt: '2024-10-10T14:00:00Z',
+    updatedAt: '2024-10-15T09:00:00Z',
+    viewCount: 3200,
+    seoScore: 90
   }
 ];
