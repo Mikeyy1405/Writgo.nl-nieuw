@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { BlogPost, Category, BlogStatus } from '../types';
-import { generateBlogPost } from '../services/geminiService';
+import { generateBlogPost } from '../services/claudeService';
 import { calculateSEOScore, SEOScoreDisplay } from './SEOSchema';
 
 interface BlogEditorProps {

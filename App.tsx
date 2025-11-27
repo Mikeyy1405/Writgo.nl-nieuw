@@ -15,19 +15,23 @@ import { AdminPanel } from './components/AdminPanel';
 import { WhyWritgo } from './components/WhyWritgo';
 import { CategoryGrid } from './components/CategoryGrid';
 import { LatestArticlesPreview } from './components/LatestArticlesPreview';
+import { CursussenOverview } from './components/CursussenOverview';
+import { ToolsOverview } from './components/ToolsOverview';
+import { FeaturedSections } from './components/FeaturedSections';
+import { Breadcrumbs } from './components/Breadcrumbs';
 
-import { Category, GrowthItem, BlogPost, User } from './types';
+import { Category, GrowthItem, BlogPost, User, BlogStatus, ContentType } from './types';
 import { searchAiRecommendations } from './services/claudeService';
-import { Category, GrowthItem, BlogPost, User, BlogStatus } from './types';
-import { searchAiRecommendations } from './services/geminiService';
 import * as db from './services/db';
 import * as auth from './services/auth';
 
-type ViewState = 'HOME' | 'ITEM_DETAIL' | 'BLOG' | 'BLOG_DETAIL' | 'BLOG_NEW' | 'BLOG_EDIT' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN';
+type ViewState = 'HOME' | 'ITEM_DETAIL' | 'BLOG' | 'BLOG_DETAIL' | 'BLOG_NEW' | 'BLOG_EDIT' | 'TOOL_NEW' | 'LOGIN' | 'ADMIN' | 'CURSUSSEN' | 'CURSUS_DETAIL' | 'TOOLS' | 'TOOL_DETAIL';
 
 const App: React.FC = () => {
   // Application Data
   const [items, setItems] = useState<GrowthItem[]>([]);
+  const [courses, setCourses] = useState<GrowthItem[]>([]);
+  const [tools, setTools] = useState<GrowthItem[]>([]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -46,14 +50,11 @@ const App: React.FC = () => {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
 
   // Convert path-based routes to hash-based routes on initial load
-  // This handles cases where users navigate directly to /admin, /blog, etc.
   useEffect(() => {
     const pathname = window.location.pathname;
     const hash = window.location.hash;
     
-    // Only convert if there's a path but no hash
     if (pathname !== '/' && !hash) {
-      // Remove leading slash and convert to hash route
       window.location.replace(`${window.location.origin}/#${pathname}`);
     }
   }, []);
@@ -62,12 +63,16 @@ const App: React.FC = () => {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
-      const [fetchedItems, fetchedPosts] = await Promise.all([
+      const [fetchedItems, fetchedPosts, fetchedCourses, fetchedTools] = await Promise.all([
         db.getItems(),
-        db.getPosts()
+        db.getPosts(),
+        db.getCourses(),
+        db.getTools()
       ]);
       setItems(fetchedItems);
       setBlogPosts(fetchedPosts);
+      setCourses(fetchedCourses);
+      setTools(fetchedTools);
       setUser(auth.getCurrentUser());
       setAllUsers(auth.getUsersForDisplay());
       setIsLoading(false);
@@ -106,7 +111,38 @@ const App: React.FC = () => {
           return;
       }
 
-      if (hash.startsWith('#/tool/')) {
+      // Cursussen routes
+      if (hash === '#/cursussen') {
+          setCurrentView('CURSUSSEN');
+          window.scrollTo(0, 0);
+      } else if (hash.startsWith('#/cursussen/')) {
+          const slug = hash.replace('#/cursussen/', '');
+          const foundCourse = await db.getCourseBySlug(slug);
+          if (foundCourse) {
+              setSelectedItem(foundCourse);
+              setCurrentView('CURSUS_DETAIL');
+              window.scrollTo(0, 0);
+          } else {
+              window.location.hash = '#/cursussen';
+          }
+      }
+      // Tools routes
+      else if (hash === '#/tools') {
+          setCurrentView('TOOLS');
+          window.scrollTo(0, 0);
+      } else if (hash.startsWith('#/tools/')) {
+          const slug = hash.replace('#/tools/', '');
+          const foundTool = await db.getToolBySlug(slug);
+          if (foundTool) {
+              setSelectedItem(foundTool);
+              setCurrentView('TOOL_DETAIL');
+              window.scrollTo(0, 0);
+          } else {
+              window.location.hash = '#/tools';
+          }
+      }
+      // Legacy /tool/ route (redirect to appropriate section)
+      else if (hash.startsWith('#/tool/')) {
           const slug = hash.replace('#/tool/', '');
           const foundItem = await db.getItemBySlug(slug);
           if (foundItem) {
@@ -130,10 +166,8 @@ const App: React.FC = () => {
           setCurrentView('BLOG');
           window.scrollTo(0, 0);
       } else if (hash === '#/admin' || hash.startsWith('#/admin/')) {
-          // Handle all admin routes - require authentication
           const currentUser = auth.getCurrentUser();
           if (!currentUser) {
-              // Redirect unauthenticated users to login
               window.location.hash = '#/login';
               return;
           }
@@ -183,6 +217,8 @@ const App: React.FC = () => {
   const handleDeleteItem = async (itemId: string) => {
     const updatedItems = await db.deleteItem(itemId);
     setItems(updatedItems);
+    setCourses(updatedItems.filter(i => i.contentType === ContentType.CURSUS));
+    setTools(updatedItems.filter(i => i.contentType === ContentType.TOOL));
   };
 
   const handleDeletePost = async (postId: string) => {
@@ -260,6 +296,8 @@ const App: React.FC = () => {
         case 'BLOG_NEW': window.location.hash = '#/admin/blog/new'; break;
         case 'BLOG_EDIT': window.location.hash = '#/admin'; break;
         case 'TOOL_NEW': window.location.hash = '#/admin/tool/new'; break;
+        case 'CURSUSSEN': window.location.hash = '#/cursussen'; break;
+        case 'TOOLS': window.location.hash = '#/tools'; break;
         default: window.location.hash = '#/';
     }
   };
@@ -272,6 +310,14 @@ const App: React.FC = () => {
      window.location.hash = `#/tool/${item.slug}`;
   };
 
+  const handleViewCourse = (item: GrowthItem) => {
+     window.location.hash = `#/cursussen/${item.slug}`;
+  };
+
+  const handleViewTool = (item: GrowthItem) => {
+     window.location.hash = `#/tools/${item.slug}`;
+  };
+
   const handleSaveBlogPost = async (newPost: BlogPost) => {
       const updatedPosts = await db.savePost(newPost);
       setBlogPosts(updatedPosts);
@@ -282,7 +328,13 @@ const App: React.FC = () => {
   const handleSaveTool = async (newTool: GrowthItem) => {
       const updatedItems = await db.saveItem(newTool);
       setItems(updatedItems);
-      window.location.hash = `#/tool/${newTool.slug}`;
+      setCourses(updatedItems.filter(i => i.contentType === ContentType.CURSUS));
+      setTools(updatedItems.filter(i => i.contentType === ContentType.TOOL));
+      if (newTool.contentType === ContentType.CURSUS) {
+        window.location.hash = `#/cursussen/${newTool.slug}`;
+      } else {
+        window.location.hash = `#/tools/${newTool.slug}`;
+      }
   };
 
   if (isLoading) {
@@ -333,60 +385,111 @@ const App: React.FC = () => {
           <>
             <Hero onSearch={handleSearch} isSearching={isSearching} />
             
-            <FilterBar 
-              selectedCategory={selectedCategory} 
-              onSelectCategory={setSelectedCategory}
-              resultCount={filteredItems.length}
-            />
+            {lastQuery && (
+              <>
+                <FilterBar 
+                  selectedCategory={selectedCategory} 
+                  onSelectCategory={setSelectedCategory}
+                  resultCount={filteredItems.length}
+                />
 
-            <div className="container mx-auto px-4 py-12">
-              {lastQuery ? (
-                <div className="mb-8 flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-white">
-                    Resultaten voor <span className="text-brand-400">"{lastQuery}"</span>
-                  </h2>
-                  <button 
-                    onClick={() => {
-                        setLastQuery('');
-                        setSelectedCategory('ALL');
-                    }}
-                    className="text-sm text-slate-500 hover:text-red-400 underline decoration-slate-700 hover:decoration-red-400 transition-all"
-                  >
-                    Wis zoekopdracht
-                  </button>
-                </div>
-              ) : (
-                <div className="text-center mb-12">
-                   <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Uitgelicht door de Redactie</h2>
-                   <p className="text-slate-400 max-w-2xl mx-auto">
-                     Zorgvuldig geselecteerde software, cursussen en opleidingen voor professionals en ondernemers.
-                   </p>
-                </div>
-              )}
-
-              {filteredItems.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-800">
-                  <div className="text-6xl text-slate-800 mb-4">
-                    <i className="fas fa-search"></i>
+                <div className="container mx-auto px-4 py-12">
+                  <div className="mb-8 flex items-center justify-between">
+                    <h2 className="text-2xl font-bold text-white">
+                      Resultaten voor <span className="text-brand-400">"{lastQuery}"</span>
+                    </h2>
+                    <button 
+                      onClick={() => {
+                          setLastQuery('');
+                          setSelectedCategory('ALL');
+                      }}
+                      className="text-sm text-slate-500 hover:text-red-400 underline decoration-slate-700 hover:decoration-red-400 transition-all"
+                    >
+                      Wis zoekopdracht
+                    </button>
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">Geen resultaten gevonden</h3>
-                  <p className="text-slate-500">Probeer een andere zoekterm of categorie.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
-                  {filteredItems.map(item => (
-                    <CourseCard key={item.id} item={item} onClick={handleViewItem} />
-                  ))}
-                </div>
-              )}
-            </div>
 
-            <CategoryGrid onCategorySelect={(cat) => setSelectedCategory(cat)} />
-            <WhyWritgo />
-            <LatestArticlesPreview posts={blogPosts.slice(0, 3)} onReadPost={handleReadPost} />
+                  {filteredItems.length === 0 ? (
+                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-dashed border-slate-800">
+                      <div className="text-6xl text-slate-800 mb-4">
+                        <i className="fas fa-search"></i>
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-2">Geen resultaten gevonden</h3>
+                      <p className="text-slate-500">Probeer een andere zoekterm of categorie.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+                      {filteredItems.map(item => (
+                        <CourseCard key={item.id} item={item} onClick={handleViewItem} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+            
+            {!lastQuery && (
+              <>
+                <FeaturedSections 
+                  courses={courses} 
+                  tools={tools} 
+                  onViewCourse={handleViewCourse}
+                  onViewTool={handleViewTool}
+                />
+                <CategoryGrid onCategorySelect={(cat) => {
+                  setSelectedCategory(cat);
+                  setLastQuery('filter');
+                }} />
+                <WhyWritgo />
+                <LatestArticlesPreview posts={blogPosts.filter(p => p.status === 'published').slice(0, 3)} onReadPost={handleReadPost} />
+              </>
+            )}
           </>
         )}
 
+        {/* Cursussen Overview Page */}
+        {currentView === 'CURSUSSEN' && (
+          <CursussenOverview courses={courses} onViewCourse={handleViewCourse} />
+        )}
+
+        {/* Cursus Detail Page */}
+        {currentView === 'CURSUS_DETAIL' && selectedItem && (
+          <>
+            <div className="container mx-auto px-4 pt-8">
+              <Breadcrumbs 
+                items={[
+                  { label: 'Home', href: '#/' },
+                  { label: 'Cursussen', href: '#/cursussen' },
+                  { label: selectedItem.title }
+                ]} 
+              />
+            </div>
+            <CourseDetail item={selectedItem} onBack={() => handleNavigate('CURSUSSEN')} />
+          </>
+        )}
+
+        {/* Tools Overview Page */}
+        {currentView === 'TOOLS' && (
+          <ToolsOverview tools={tools} onViewTool={handleViewTool} />
+        )}
+
+        {/* Tool Detail Page */}
+        {currentView === 'TOOL_DETAIL' && selectedItem && (
+          <>
+            <div className="container mx-auto px-4 pt-8">
+              <Breadcrumbs 
+                items={[
+                  { label: 'Home', href: '#/' },
+                  { label: 'Tools', href: '#/tools' },
+                  { label: selectedItem.title }
+                ]} 
+              />
+            </div>
+            <CourseDetail item={selectedItem} onBack={() => handleNavigate('TOOLS')} />
+          </>
+        )}
+
+        {/* Legacy Item Detail (for backward compatibility) */}
         {currentView === 'ITEM_DETAIL' && selectedItem && (
             <CourseDetail item={selectedItem} onBack={() => handleNavigate('HOME')} />
         )}
